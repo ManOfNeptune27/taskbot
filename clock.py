@@ -33,6 +33,14 @@ def status():
     elapsed = datetime.now() - started
     print(f"Clocked in for {format_elapsed(elapsed)}.")
 
+def stop():
+    started = read_start()
+    if started is None:
+        print("Not clocked in.")
+        return
+    elapsed = datetime.now() - started
+    STATE_FILE.unlink()
+    print(f"Clocked out. Total time: {format_elapsed(elapsed)}.")
 
 def main():
     if len(sys.argv) < 2:
@@ -42,6 +50,8 @@ def main():
     command = sys.argv[1]
     if command == "start":
         start()
+    elif command == "stop":
+        stop()
     elif command == "status":
         status()
     else:
