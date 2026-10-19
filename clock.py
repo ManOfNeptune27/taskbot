@@ -2,6 +2,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
+from notify import notify
 
 STATE_FILE = Path.home() / ".taskbot" / "clock_state.json"
 
@@ -42,6 +43,14 @@ def stop():
     STATE_FILE.unlink()
     print(f"Clocked out. Total time: {format_elapsed(elapsed)}.")
 
+def ping():
+    started = read_start()
+    if started is None:
+        return
+    elapsed = datetime.now() - started
+    notify(f"Clocked in for {format_elapsed(elapsed)}.", title="Clock")
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: clock.py start|status")
@@ -54,6 +63,8 @@ def main():
         stop()
     elif command == "status":
         status()
+    elif command == "ping":
+        ping()
     else:
         print(f"Unknown command: {command}")
 
