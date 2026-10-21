@@ -8,7 +8,7 @@ SENT_FILE = Path.home() / ".taskbot" / "sent_state.json"
 def load():
     if not SENT_FILE.exists():
         return {}
-    return json.loads(SENT_FILE.read_test())
+    return json.loads(SENT_FILE.read_text())
 
 
 def last_sent(key):
