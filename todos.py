@@ -3,11 +3,13 @@ from datetime import date
 from pathlib import Path
 
 from notify import notify
-from state import sent_today, mark_sent
+from state import is_due, in_active_hours, mark_sent
 
 TODO_FILE = Path.home() / ".todo-txt" / "todo.txt"
 WARN_DAYS = 1
-
+REMIND_EVERY_HOURS = 3
+ACTIVE_START = 9
+ACTIVE_END = 21
 
 def read_task():
     if not TODO_FILE.exists():
@@ -34,6 +36,8 @@ def due_status(due, today):
 
 
 def check():
+    if not in_active_hours(ACTIVE_START, ACTIVE_END):
+        return
     today = date.today()
     alerts = []
     keys = []
@@ -47,7 +51,7 @@ def check():
         if status is None:
             continue
         key = f"todo:{status}:{line}"
-        if sent_today(key):
+        if not is_due(key, REMIND_EVERY_HOURS):
             continue
         alerts.append(f"{status}: {line}")
         keys.append(key)
@@ -57,7 +61,6 @@ def check():
         notify(message, title="Todo")
         for key in keys:
             mark_sent(key)
-
 
 def main():
     check()

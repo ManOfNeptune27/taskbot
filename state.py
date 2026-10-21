@@ -27,3 +27,15 @@ def mark_sent(key):
     data[key] = datetime.now().isoformat()
     SENT_FILE.parent.mkdir(exist_ok=True)
     SENT_FILE.write_text(json.dumps(data))
+
+
+def is_due(key, every_hours):
+    last = last_sent(key)
+    if last is None:
+        return True
+    elapsed = (datetime.now() - last).total_seconds() / 3600
+    return elapsed >= every_hours
+
+
+def in_active_hours(start, end):
+    return start <= datetime.now().hour < end
